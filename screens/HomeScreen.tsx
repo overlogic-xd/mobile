@@ -1,51 +1,92 @@
-import * as React from 'react';
-import { SwipeablePanel } from 'rn-swipeable-panel';
-import { Text, View } from "../components/Themed";
-import { StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Dimensions, FlatList, SectionList } from 'react-native';
+import BottomSheet from '@gorhom/bottom-sheet';
+import MapView from 'react-native-maps';
+import { View, Text, TextInput } from "../components/Themed";
+
+const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen() {
-    const [panelProps, setPanelProps] = React.useState({
-        fullWidth: true,
-        openLarge: true,
-        showCloseButton: true,
-        onClose: () => closePanel(),
-        onPressCloseButton: () => closePanel(),
-        // ...or any prop you want
-      });
-      const [isPanelActive, setIsPanelActive] = React.useState(false);
-    
-      const openPanel = () => {
-        setIsPanelActive(true);
-      };
-    
-      const closePanel = () => {
-        setIsPanelActive(false);
-      };
-    
-      return (
+    // variables
+    const snapPoints = React.useMemo(() => [160, '90%'], []);
+
+    // renders
+    return (
         <View style={styles.container}>
-          <Text style={styles.title}>Welcome to React Native!</Text>
-          <Text style={styles.separator} >To get started, edit App.js</Text>
-          <SwipeablePanel {...panelProps} isActive={isPanelActive}>
-            <Text>Hello world</Text>
-          </SwipeablePanel>
+            <MapView style={styles.map} />
+            <BottomSheet
+                animateOnMount={true}
+                snapPoints={snapPoints}
+                style={styles.panel}
+            >
+                <View style={styles.content}>
+                    <Text style={styles.title}>Пошук екскурсій</Text>
+                    <TextInput style={styles.input} placeholder="Пошук екскурсій за визначною пам'яткою" />
+                    <Text style={styles.subtitle}>Популярні</Text>
+                    <SectionList
+                        sections={[
+                            {
+                              title: "Main dishes",
+                              data: ["lorem"]
+                            },
+                            {
+                              title: "Sides",
+                              data: ["French Fries", "Onion Rings", "Fried Shrimps"]
+                            },
+                            {
+                              title: "Drinks",
+                              data: ["Water", "Coke", "Beer"]
+                            },
+                            {
+                              title: "Desserts",
+                              data: ["Cheese Cake", "Ice Cream"]
+                            }
+                          ]}
+                        keyExtractor={(item, index) => item + index}
+                        renderItem={({ item }) => <Text>{item}</Text>}
+                        renderSectionHeader={({ section: { title } }) => (
+                            <Text style={styles.item}>{title}</Text>
+                        )}
+                    />
+                </View>
+            </BottomSheet>
         </View>
-      );
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
+        flex: 1,
+    },
+    content: {
+        flex: 1,
+        padding: 20
+    },
+    item: {
+        fontSize: 20
+    },
+    input: {
+        fontSize: 16,
+        borderColor: 'black',
+        borderWidth: 1,
+        padding: 10,
+        marginTop: 10,
+        borderRadius: 4
     },
     title: {
-      fontSize: 20,
-      fontWeight: 'bold',
+        fontSize: 30,
+        fontWeight: 'bold'
     },
-    separator: {
-      marginVertical: 30,
-      height: 1,
-      width: '80%',
+    subtitle: {
+        fontSize: 26,
+        marginTop: 24,
+        marginBottom: 16,
+        fontWeight: 'bold'
     },
-  });
+    panel: {
+        shadowColor: "#ff00",
+        shadowOpacity: 2,
+        shadowRadius: 2
+    },
+    map: { width, height }
+});
