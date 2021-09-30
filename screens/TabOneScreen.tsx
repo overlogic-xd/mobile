@@ -1,33 +1,46 @@
-import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { Actionsheet, useDisclose } from "native-base";
+import * as React from "react";
+import { Dimensions, StyleSheet } from "react-native";
+import MapView from "react-native-maps";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { View, Text } from "../components/Themed";
+import { RootTabScreenProps } from "../types";
 
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
-
-export default function TabOneScreen({ navigation }: RootTabScreenProps<'TabOne'>) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
-    </View>
-  );
-}
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  map: {
+    width,
+    height,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
   },
 });
+
+export default function TabOneScreen({
+  navigation,
+}: RootTabScreenProps<"TabOne">) {
+  // ref
+  const bottomSheetRef = React.useRef<BottomSheet>(null);
+
+  // variables
+  const snapPoints = React.useMemo(() => ["25%", "50%"], []);
+
+  return (
+    <View style={styles.container}>
+      <MapView style={styles.map} />
+      <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
+        <View style={styles.contentContainer}>
+          <Text>Awesome 🎉</Text>
+        </View>
+      </BottomSheet>
+    </View>
+  );
+}
